@@ -1,11 +1,11 @@
-# GHunter
+# GitHunt
 
 <p align="center">
- <img height=400px weight=400px src=".assets/GHunter.png" >
+ <img height=400px weight=400px src=".assets/GitHunt.png" >
 </p>
 
 
-GHunter is a small automation project designed to hunt for publicly exposed private keys, credentials, authentication tokens, API Keys, etc, using GitHub search. 
+GitHunt is a small automation project designed to hunt for publicly exposed private keys, credentials, authentication tokens, API Keys, etc, using GitHub search. 
 
 > [!NOTE]
 > As of `March 11, 2024`, secret scanning and push protection will be enabled by default for all new user-owned public repositories that you create.
@@ -22,7 +22,7 @@ GHunter is a small automation project designed to hunt for publicly exposed priv
 
 Clone repo and install dependencies
 ```bash
-git clone https://github.com/v4resk/GHunter && cd GPTHunter
+git clone https://github.com/v4resk/GitHunt && cd GPTHunter
 python3 -m virtualenv venv && source venv/bin/activate
 pip3 install -r requirements.txt
 ```
@@ -37,4 +37,4 @@ TO DO
 
 
 ## References
-GHunter was largely inspired by [ChatGPT-API-Leakage](https://github.com/Junyi-99/ChatGPT-API-Leakage/tree/main) and projects [Github Dorks](https://github.com/techgaun/github-dorks).
+GitHunt was largely inspired by [ChatGPT-API-Leakage](https://github.com/Junyi-99/ChatGPT-API-Leakage/tree/main) and projects [Github Dorks](https://github.com/techgaun/github-dorks).
