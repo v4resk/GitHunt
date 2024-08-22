@@ -5,7 +5,7 @@ from colorama import init, Fore
 from bs4 import BeautifulSoup
 from getpass import getpass
 
-class Cookies:
+class HuntSession:
     def __init__(self, cookie_file='cookies.pkl'):
         self.cookie_file = cookie_file
         self.cookies = {}

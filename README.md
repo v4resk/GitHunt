@@ -3,9 +3,7 @@
 <p align="center">
  <img height=400px weight=400px src=".assets/GitHunt.png" >
 </p>
-
-
-GitHunt is a small automation project designed to hunt for publicly exposed private keys, credentials, authentication tokens, API Keys, etc, using GitHub search. 
+GitHunt is a Python tool for detecting sensitive data exposure in GitHub repositories. Leveraging GitHub's powerful search functionality, it scans for private keys, credentials, authentication tokens, API keys, and more.
 
 > [!NOTE]
 > As of `March 11, 2024`, secret scanning and push protection will be enabled by default for all new user-owned public repositories that you create.
@@ -30,9 +28,26 @@ pip3 install -r requirements.txt
 ## Usage
 
 You must specify a Github access token in order to interact with the Github API, see [this page](https://docs.github.com/fr/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) to create one.
+
 ```bash
 
-TO DO
+ python GitHunt.py -h
+
+     ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗███╗   ██╗████████╗
+    ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║████╗  ██║╚══██╔══╝
+    ██║  ███╗██║   ██║   ███████║██║   ██║██╔██╗ ██║   ██║
+    ██║   ██║██║   ██║   ██╔══██║██║   ██║██║╚██╗██║   ██║
+    ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██║ ╚████║   ██║
+    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝
+                                                 @v4resk
+
+usage: GitHunt.py [-h] -m {gpt}
+
+Hunt for sensitive data exposure on GitHub.
+
+options:
+  -h, --help          show this help message and exit
+  -m, --module {gpt}  Hunting model to run
 ```
 
 
