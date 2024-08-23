@@ -3,9 +3,9 @@
 <p align="center">
  <img height=400px weight=400px src=".assets/GitHunt.png" >
 </p>
-GitHunt is a Python tool for detecting sensitive data exposure in GitHub repositories. Leveraging GitHub's powerful search functionality, it scans for private keys, credentials, authentication tokens, API keys, and more.
+GitHunt is a Python tool for detecting sensitive data exposure in GitHub repositories. Leveraging GitHub's powerful search functionality, it scans for private keys, credentials, authentication tokens, API keys, and more.  
 
-> [!NOTE]
+  > [!NOTE]
 > As of `March 11, 2024`, secret scanning and push protection will be enabled by default for all new user-owned public repositories that you create.
 
 > [!WARNING]
