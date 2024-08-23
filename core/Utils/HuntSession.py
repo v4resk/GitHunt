@@ -4,6 +4,7 @@ import requests
 from colorama import init, Fore
 from bs4 import BeautifulSoup
 from getpass import getpass
+requests.packages.urllib3.disable_warnings() 
 
 class HuntSession:
     def __init__(self, cookie_file='cookies.pkl'):
@@ -26,7 +27,6 @@ class HuntSession:
         self.session = requests.Session()
         self.session.verify = False
         self.session.cookies.update(self.cookies)
-
 
     def _load_cookies(self):
         """Load cookies from the pickle file."""
@@ -136,3 +136,4 @@ class HuntSession:
             print(f"Failed to login. Status code: {response.status_code}")
 
 
+    

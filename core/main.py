@@ -45,3 +45,7 @@ class GitHunt:
 
         ## Start hunting
         self.huntEngine = HuntEngine(self.hunt_session, self.module)
+        apis = self.huntEngine.hunt()
+
+        for api in apis:
+            print(api)

@@ -2,6 +2,7 @@ from core.Utils.HuntSession import HuntSession
 from pydoc import locate
 from tqdm import tqdm
 from bs4 import BeautifulSoup
+import time
 
 class HuntEngine():
     def __init__(self,hunt_session,module="OpenAI"):
@@ -20,12 +21,12 @@ class HuntEngine():
         self.auditor = self.init_hunt_auditor()
 
         self.candidate_urls = [
-            f"https://github.com/search?q={keyword}+AND+(/{regex.pattern}/)+language:{language}&type=code&ref=advsearch"
+            (f"https://github.com/search?q=/{regex.pattern}/+language:{language}&type=code&ref=advsearch", regex)
             for regex in self.regex_list
             for language in self.languages
             for keyword in self.keywords
         ]
-        print(f"{self.candidate_urls}")
+    
         pass
 
     def init_hunt_module(self):
@@ -33,7 +34,7 @@ class HuntEngine():
             hunt_module_str = f"core.Dorks.{self.module}Dorks.{self.module}Dorks"
             hunt_module_class = locate(hunt_module_str)
             hunt_module_instance = hunt_module_class()
-            print(f"Found hunt module: {hunt_module_str}")
+            #print(f"Found hunt module: {hunt_module_str}")
 
             self.keywords = hunt_module_instance.get_keywords()
             self.languages = hunt_module_instance.get_languages()
@@ -49,7 +50,7 @@ class HuntEngine():
             hunt_module_str = f"core.Auditors.{self.module}Auditor.{self.module}Auditor"
             hunt_module_class = locate(hunt_module_str)
             hunt_module_instance = hunt_module_class()
-            print(f"Found auditor module: {hunt_module_str}")
+            #print(f"Found auditor module: {hunt_module_str}")
 
             return True
         except Exception as ex:
@@ -57,9 +58,31 @@ class HuntEngine():
             return False
 
     
-    def process_url(self):
-     # Github search here
-        pass
+    def hunt(self):
+        # Github search here
+        apis = []
+        for url, pattern in self.candidate_urls:
+            try:
+                # 1. Search URL
+                # 2. For each code block --> go to url 
+                # 3. Regex api on content
+                # 4. When finished --> Go next page
+
+                print(f"Hunting for: {url}")
+                response = self.hunt_session.session.get(url)
+                if "You have exceeded a secondary rate limit" in soup.text:
+                    for _ in tqdm(range(30), desc="⏳ Rate limit reached, waiting ..."):
+                        time.sleep(1)
+                    continue
+
+                # Add APIs to list
+                apis.extend(pattern.findall(response.text))
+                
+
+            except Exception as e:
+                break
+        return apis
+        
 
     def db_key_exists(self, api_key):
         # Implement the database check for existing API keys here
