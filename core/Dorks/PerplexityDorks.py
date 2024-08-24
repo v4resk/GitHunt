@@ -1,18 +1,10 @@
 from core.Dorks.Dorks import Dorks
 import re
 
-class OpenAIDorks(Dorks):
+class PerplexityDorks(Dorks):
     def __init__(self):
         super().__init__()
         self.keywords = [
-            "AI ethics",
-            "AI in customer service",
-            "AI in education",
-            "AI in finance",
-            "AI in healthcare",
-            "AI in marketing",
-            "AI-driven automation",
-            "AI-powered content creation",
             "CoT",
             "DPO",
             "RLHF",
@@ -78,8 +70,5 @@ class OpenAIDorks(Dorks):
         ]
 
         self.regex_list = [
-            re.compile(r"sk-proj-\S{74}T3BlbkFJ\S{73}A"),  # Named Project API Key
-            re.compile(r"sk-proj-\S{58}T3BlbkFJ\S{58}"),  # Default Project API Key
-            re.compile(r"sk-proj-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20}"),
-            re.compile(r"sk-[a-zA-Z0-9]{48}"),  # Deprecated by OpenAI
+            re.compile(r"pplx-[a-zA-Z0-9]{40,}"),  # Perplexity API Key
         ]

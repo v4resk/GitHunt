@@ -72,8 +72,10 @@ class HuntEngine():
 
     def rate_limit_check(self,response):
         if "You have exceeded a secondary rate limit" in response.text:
-                    for _ in tqdm(range(30), desc=f"{Fore.RED}[-] {Fore.WHITE} Rate limit reached, waiting ..."):
+                    for _ in tqdm(range(40), desc=f"{Fore.RED}[-] {Fore.WHITE} Rate limit reached, waiting ...", leave=False):
                         time.sleep(1)
+                    return True
+
     
     def hunt(self):
         # Github search here
@@ -87,7 +89,9 @@ class HuntEngine():
                     # 0. Perform a GitHub search
                     #print(f"{Fore.CYAN}[+] {Fore.WHITE}Hunting URL: {url}")
                     response = self.hunt_session.session.get(url)
-                    self.rate_limit_check(response)
+                    isRateLimited = self.rate_limit_check(response)
+                    if isRateLimited:
+                        continue
 
                     # 1. Get all GitHub files that matched our searcg
                     data = json.loads(response.text)

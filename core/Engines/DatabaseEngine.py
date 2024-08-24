@@ -52,7 +52,7 @@ class DatabaseEngine():
             (value, isValid, current_date),
         )
         self.connection.commit()
-        print(f"{Fore.GREEN}[+] {Fore.WHITE}{value} added to database !")
+        #print(f"{Fore.GREEN}[+] {Fore.WHITE}{value} added to database !")
 
     def db_delete_value(self,value,module):
         self.cursor.execute(f"DELETE FROM {module} WHERE value = ?", (value,))
