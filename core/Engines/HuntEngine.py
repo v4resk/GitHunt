@@ -92,6 +92,7 @@ class HuntEngine():
                     isRateLimited = self.rate_limit_check(response)
                     if isRateLimited:
                         continue
+                    #print(response.text)
 
                     # 1. Get all GitHub files that matched our searcg
                     data = json.loads(response.text)

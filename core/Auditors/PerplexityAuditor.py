@@ -25,9 +25,5 @@ class PerplexityAuditor(Auditor):
             result = completion.choices[0].message.content
             print(f"{Fore.GREEN}[+] {Fore.WHITE} Valid API found: {key}: {result}")
             return "YES"
-        except AuthenticationError as e:
-            return f'NO: {e.body["code"]}'
-        except RateLimitError as e:
-            return f'NO: {e.body["code"]}'
         except Exception as e:
             return "NO"

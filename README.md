@@ -5,15 +5,8 @@
 </p>
 GitHunt is a Python tool for detecting sensitive data exposure in GitHub repositories. Leveraging GitHub's powerful search functionality, it scans for private keys, credentials, authentication tokens, API keys, and more.  
 
-  > [!NOTE]
-> As of `March 11, 2024`, secret scanning and push protection will be enabled by default for all new user-owned public repositories that you create.
-
-> [!WARNING]
-> **⚠️ DISCLAIMER**
->
-> THIS PROJECT IS ONLY FOR ***SECURITY RESEARCH*** AND REMINDS OTHERS TO PROTECT THEIR PROPERTY, DO NOT USE IT ILLEGALLY!!
->
-> The project authors are not responsible for any consequences resulting from misuse.
+THIS PROJECT IS ONLY FOR ***SECURITY RESEARCH*** AND REMINDS OTHERS TO PROTECT THEIR PROPERTY, DO NOT USE IT ILLEGALLY!!
+The project authors are not responsible for any consequences resulting from misuse.
 
 
 ## Installation 
@@ -27,28 +20,30 @@ pip3 install -r requirements.txt
 
 ## Usage
 
-You must specify a Github access token in order to interact with the Github API, see [this page](https://docs.github.com/fr/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) to create one.
+![WARNING1](.assets/githunt-uses.png)
 
-```bash
+## Modules
 
- python GitHunt.py -h
+GitHunt use "modules" that define targets for the hunting sessions. Below is the list of currently implemented ones
 
-     ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗███╗   ██╗████████╗
-    ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║████╗  ██║╚══██╔══╝
-    ██║  ███╗██║   ██║   ███████║██║   ██║██╔██╗ ██║   ██║
-    ██║   ██║██║   ██║   ██╔══██║██║   ██║██║╚██╗██║   ██║
-    ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██║ ╚████║   ██║
-    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝
-                                                 @v4resk
+| **Name** | **Description** |
+|------|------|
+|   OpenAI  | Hunt for OpenAI API Keys     |
+|   Perplexity  | Hunt for Perplexity API Keys     |
 
-usage: GitHunt.py [-h] -m {gpt}
+# FAQ
 
-Hunt for sensitive data exposure on GitHub.
+**Q: Why use GitHub's web-based search rather than the GitHub Search API?**
 
-options:
-  -h, --help          show this help message and exit
-  -m, --module {gpt}  Hunting model to run
-```
+A: The official GitHub search API does not support regex search. Only web-based search does.
+
+**Q: Why are you limiting the programming language in the search instead of searching all languages?**
+
+A: The web-based search only provides the first 5 pages of results. There are many API keys available. By limiting the language, we can break down the search results and obtain more keys.
+
+**Q: Why don't you use multithreading?**
+
+A: Because GitHub searches and OpenAI are rate-limited. Using multithreading does not significantly increase efficiency.
 
 
 ## References
