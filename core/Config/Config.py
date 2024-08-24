@@ -9,8 +9,8 @@ def get_project_root() -> Path:
 class Config(object):
     def __init__(self, auto_load: bool = True):
         self.config = configparser.ConfigParser(allow_no_value=True, interpolation=configparser.ExtendedInterpolation())
-        self.default_config = os.path.join(get_project_root(), "config", "default.ini")
-        self.file = os.path.join(get_project_root(), "config", "config.ini")
+        self.default_config = os.path.join(get_project_root(), "Config", "default.ini")
+        self.file = os.path.join(get_project_root(), "Config", "config.ini")
         if not os.path.isfile(self.file):
             self.write_default()
         if auto_load:

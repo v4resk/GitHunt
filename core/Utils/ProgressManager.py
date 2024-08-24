@@ -1,5 +1,5 @@
 import time
-from colorama import init, Fore
+from colorama import Fore
 import os
 
 class ProgressManager:

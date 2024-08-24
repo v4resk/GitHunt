@@ -1,7 +1,7 @@
 import os
 import pickle
 import requests
-from colorama import init, Fore
+from colorama import Fore
 from bs4 import BeautifulSoup
 from getpass import getpass
 requests.packages.urllib3.disable_warnings() 
@@ -12,16 +12,16 @@ class HuntSession:
         self.cookies = {}
 
         if os.path.exists(self.cookie_file):
-            print(f"{Fore.GREEN}[+] {Fore.WHITE}Cookie file exists. Checking validity...")
+            print(f"{Fore.CYAN}[+] {Fore.WHITE}Cookie file exists. Checking validity...")
             self._load_cookies()
             if not self._is_valid():
                 print(f"{Fore.RED}[-] {Fore.WHITE}Cookies are invalid or expired. Re-authenticating...")
                 self._delete_cookie_file()
                 self.github_authenticate()
             else:
-                print(f"{Fore.GREEN}[+] {Fore.WHITE}Cookies are valid.")
+                print(f"{Fore.CYAN}[+] {Fore.WHITE}Cookies are valid.")
         else:
-            print(f"{Fore.GREEN}[+] {Fore.WHITE}Cookie file does not exist. Authenticating...")
+            print(f"{Fore.CYAN}[+] {Fore.WHITE}Cookie file does not exist. Authenticating...")
             self.github_authenticate()
 
         self.session = requests.Session()
@@ -37,7 +37,7 @@ class HuntSession:
         """Save cookies to the pickle file."""
         with open(self.cookie_file, 'wb') as f:
             pickle.dump(cookies, f)
-        print(f"{Fore.GREEN}[+] {Fore.WHITE}Cookies saved to file.")
+        print(f"{Fore.CYAN}[+] {Fore.WHITE}Cookies saved to file.")
 
     def _is_valid(self):
         """Check if the stored cookies are valid for github.com."""
@@ -60,14 +60,14 @@ class HuntSession:
         """Delete the cookie file."""
         try:
             os.remove(f"./{self.cookie_file}")
-            print(f"{Fore.GREEN}[+] {Fore.WHITE}Cookie file deleted.")
+            print(f"{Fore.CYAN}[+] {Fore.WHITE}Cookie file deleted.")
         except OSError as e:
             print(f"{Fore.RED}[-] {Fore.WHITE}Error deleting cookie file: {e}")
 
 
     def github_authenticate(self):        
         """Authenticate to GitHub and create a new cookie file."""
-        print(f"{Fore.GREEN}[+] {Fore.WHITE}Authenticating to GitHub...")
+        print(f"{Fore.CYAN}[+] {Fore.WHITE}Authenticating to GitHub...")
         session = requests.Session()
         login_url = "https://github.com/login"
         
@@ -109,7 +109,7 @@ class HuntSession:
         }
         response = session.post("https://github.com/session", data=data)
         if response.status_code == 200:
-            print(f"{Fore.GREEN}[+] {Fore.WHITE}Valid credentials.")
+            print(f"{Fore.CYAN}[+] {Fore.WHITE}Valid credentials.")
             #Check if we need to handle 2FA
             if "session-otp-input-label" in response.text:
                 print(f"{Fore.YELLOW}[+] {Fore.WHITE}2FA required. Please enter your 2FA code.")
@@ -128,7 +128,7 @@ class HuntSession:
                 }
                 response_2fa = session.post("https://github.com/sessions/two-factor", data=data_2fa)
                 if response_2fa.status_code == 200 and username in response_2fa.text:
-                    print(f"{Fore.GREEN}[+] {Fore.WHITE}2FA verified successfully. Authentication complete.")
+                    print(f"{Fore.CYAN}[+] {Fore.WHITE}2FA verified successfully. Authentication complete.")
                     self._save_cookies(session.cookies)
                 else:
                     print(f"{Fore.RED}[-] {Fore.WHITE}2FA verification failed. Please check your code.")

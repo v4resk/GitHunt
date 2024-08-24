@@ -1,2 +1,7 @@
 github3.py
 feedparser
+colorama
+requests
+bs4
+tqdm
+openai

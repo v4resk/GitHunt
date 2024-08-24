@@ -1,45 +1,46 @@
-from core.Utils.HuntSession import HuntSession
 from core.Utils.ProgressManager import ProgressManager
 from pydoc import locate
 from tqdm import tqdm
-from bs4 import BeautifulSoup
 import time
-from colorama import init, Fore
+from colorama import Fore
 import re
 import json
+import random
+
 
 class HuntEngine():
-    def __init__(self,hunt_session,module="OpenAI", resume=None):
+    def __init__(self, databaseEngine, hunt_session,module="OpenAI" ,resume=None):
         self.progress_manager = ProgressManager()
         self.hunt_session = hunt_session
         self.module = module 
         self.resume = resume
 
-        # Load hunt module
+        # Load hunt module & auditor
         self.keywords = None
         self.languages = None
         self.regex_list = None
+        self.hunt_auditor = None
+        self.init_hunt_auditor()
         self.init_hunt_module()
 
-        # Load hunt auditor
-        self.auditor = self.init_hunt_auditor()
+        # Load URLS from Dork
         candidate_urls_with_keywords = [
             (f"https://github.com/search?q={keyword}+AND+(/{regex.pattern}/)+language:{language}&type=code&ref=advsearch", regex)
             for regex in self.regex_list
             for language in self.languages
             for keyword in self.keywords
         ]
-
-        # Define the second type of candidate URLs without keywords
         candidate_urls_without_keywords = [
             (f"https://github.com/search?q=/{regex.pattern}/+language:{language}&type=code&ref=advsearch", regex)
             for regex in self.regex_list
             for language in self.languages
         ]
-
-        # Combine both lists
         self.candidate_urls = candidate_urls_with_keywords + candidate_urls_without_keywords
-        pass
+        random.shuffle(self.candidate_urls)
+
+        # DB 
+        self.databaseEngine = databaseEngine
+        
 
     def init_hunt_module(self):
         try:
@@ -61,7 +62,7 @@ class HuntEngine():
         try:
             hunt_module_str = f"core.Auditors.{self.module}Auditor.{self.module}Auditor"
             hunt_module_class = locate(hunt_module_str)
-            hunt_module_instance = hunt_module_class()
+            self.hunt_auditor = hunt_module_class()
             #print(f"Found auditor module: {hunt_module_str}")
 
             return True
@@ -84,7 +85,7 @@ class HuntEngine():
             while next_page < 6:
                 try:
                     # 0. Perform a GitHub search
-                    print(f"{Fore.GREEN}[+] {Fore.WHITE}Hunting for: {url}")
+                    #print(f"{Fore.CYAN}[+] {Fore.WHITE}Hunting URL: {url}")
                     response = self.hunt_session.session.get(url)
                     self.rate_limit_check(response)
 
@@ -102,12 +103,7 @@ class HuntEngine():
                         #print(e_url)
                         self.rate_limit_check(response_e)
                         apis.update(pattern.findall(response_e.text))
-
-                        #Check API Here ?
-                        #Insert in DB, dedup db
-
-                    expand_urls = []
-
+                
                     # 4. Go next page:
                     next_page = next_page+1
                     page_pattern = r"&p=[1-4]"
@@ -116,17 +112,40 @@ class HuntEngine():
                     else:
                         url = f"{url}&p=2"
 
-                    #for api in apis:
-                    #    print(api)
+
+                    value_added, valid_value_added = self.process(apis)
+                    apis = set()
+                    expand_urls = []
+                    
+                    if value_added > 0:
+                        print(f"{Fore.GREEN}[+] {Fore.WHITE}Found {Fore.CYAN}{value_added}{Fore.WHITE} values and added them to the database, {Fore.GREEN if valid_value_added > 0 else Fore.RED}{valid_value_added if valid_value_added > 0 else 'none'}{Fore.WHITE} of them are valid")
 
                 except Exception as e:
                     print(e)
                     continue
         return apis
+    
+    def process(self,apis):
+        """This function process a secret list, validate them and insert them in DB"""
+        #Check API Here ?
+        #Insert in DB, dedup db
+        value_added = 0
+        valid_value_added = 0
+
+        for api in apis:
+            if self.databaseEngine.db_value_exists(api, module=self.module):
+                continue
+    
+            isValid = self.hunt_auditor.is_valide(api)
+            if isValid == "YES":
+                valid_value_added = valid_value_added + 1
+            self.databaseEngine.db_add_value(api, isValid=isValid ,module=self.module)
+            value_added = value_added+1
+        
+        return value_added, valid_value_added
         
 
-    def db_key_exists(self, api_key):
-        # Implement the database check for existing API keys here
+    def db_value_exists(self, value):
         pass
 
     def db_insert(self, api_key, result):
