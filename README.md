@@ -13,7 +13,7 @@ The project authors are not responsible for any consequences resulting from misu
 
 Clone repo and install dependencies
 ```bash
-git clone https://github.com/v4resk/GitHunt && cd GPTHunter
+git clone https://github.com/v4resk/GitHunt && cd GitHunt
 python3 -m virtualenv venv && source venv/bin/activate
 pip3 install -r requirements.txt
 ```
@@ -24,7 +24,7 @@ pip3 install -r requirements.txt
 
 ## Modules
 
-GitHunt use "modules" that define targets for the hunting sessions. Below is the list of currently implemented ones
+GitHunt uses “modules” to define targets for hunting sessions. Here is a list of the modules currently implemented.
 
 | **Name** | **Description** |
 |------|------|

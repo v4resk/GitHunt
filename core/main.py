@@ -29,8 +29,19 @@ class GitHunt:
 
     def parse_arguments(self):
         parser = argparse.ArgumentParser(description='Hunt for sensitive data exposure on GitHub.', formatter_class=CustomArgFormatter)
-        parser.add_argument('-m', '--module', dest='module', required=True, choices=self.available_modules,
-                            help='Hunting model to run')
+
+        subparsers = parser.add_subparsers(dest='command', required=True, help='Available commands')
+        hunt_parser = subparsers.add_parser('hunt', help='Hunt for sensitive data')
+        hunt_parser.add_argument('-m', '--module', dest='module', required=True, choices=self.available_modules,
+                            help='Hunting module to run')
+
+        db_parser = subparsers.add_parser('db', help='Manage the database')
+        db_parser.add_argument('-m', '--module', dest='module', required=True, choices=self.available_modules,
+                            help='Module to manage in the database')
+        db_parser.add_argument('-f', '--format', dest='format', required=True, choices=['json', 'csv','txt'],
+                            help='Output format for the database')
+        db_parser.add_argument('-o', '--output', dest='output', required=True,
+                            help='Output file for the database export')
 
         args = parser.parse_args()
         return args
@@ -50,18 +61,24 @@ class GitHunt:
         self.available_modules = self.get_available_modules()
         args = self.parse_arguments()
         self.module = args.module
-        print(f'{Fore.CYAN}Running {self.module} module{Fore.WHITE}')
 
-        # Init Database
-        self.databaseEngine = DatabaseEngine(self.available_modules)
 
-        ## Get hunting session / Github cookies
-        self.hunt_session = HuntSession()
+        if args.command == 'hunt':
+            print(f'{Fore.CYAN}Starting the hunt for {self.module} module...{Fore.WHITE}')
 
-        ## Start hunting
-        self.huntEngine = HuntEngine(databaseEngine=self.databaseEngine, hunt_session=self.hunt_session, module=self.module)
-        self.huntEngine.hunt()
+            # Init Database
+            self.databaseEngine = DatabaseEngine(self.available_modules)
 
-        #for api in apis:
-        #    print(api)
-        self.databaseEngine.close()
+            ## Get hunting session / Github cookies
+            self.hunt_session = HuntSession()
+
+            ## Start hunting
+            self.huntEngine = HuntEngine(databaseEngine=self.databaseEngine, hunt_session=self.hunt_session, module=self.module)
+            self.huntEngine.hunt()
+
+            #for api in apis:
+            #    print(api)
+            self.databaseEngine.close()
+        elif args.command == 'db':
+            print(f'{Fore.CYAN}Managing the database for {self.module} module...{Fore.WHITE}')
+            
