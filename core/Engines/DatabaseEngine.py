@@ -1,3 +1,5 @@
+import json
+import csv
 import sqlite3
 import os
 from os.path import join as path_join
@@ -57,6 +59,38 @@ class DatabaseEngine():
     def db_delete_value(self,value,module):
         self.cursor.execute(f"DELETE FROM {module} WHERE value = ?", (value,))
         self.connection.commit()
+    
+    def exportDB(self,module, format, output,exportAll):
+        # Determine the query based on exportAll flag
+        if exportAll:
+            query = f"SELECT * FROM {module}"
+        else:
+            query = f"SELECT * FROM {module} WHERE isValid = 'YES'"
+        
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+
+        # Export to JSON
+        if format == "json":
+            data = [{"value": row[0], "isValid": row[1], "lastChecked": row[2]} for row in rows]
+            with open(output, 'w') as json_file:
+                json.dump(data, json_file, indent=4)
+
+        # Export to CSV
+        elif format == "csv":
+            with open(output, 'w', newline='') as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(["value", "isValid", "lastChecked"])  # CSV header
+                writer.writerows(rows)
+
+        # Export to TXT
+        elif format == "txt":
+            with open(output, 'w') as txt_file:
+                for row in rows:
+                    txt_file.write(f"Value: {row[0]} isValid: {row[1]} LastChecked: {row[2]}\n")
+
+        print(f"{Fore.GREEN}[+] {Fore.WHITE} Database exported successfully to {output} in {format} format.")
+
 
 
     def close(self):

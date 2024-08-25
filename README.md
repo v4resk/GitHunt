@@ -19,8 +19,30 @@ pip3 install -r requirements.txt
 ```
 
 ## Usage
+```bash
+# Hunt mode: see available modules
+python GitHunt.py hunt -h
+
+# Hunt mode: use OpenAI module
+python GitHunt.py hunt -m OpenAI
+
+# Export mode: see available modules and options
+python GitHunt.py db -h
+
+# Export mode: export valid OpenAI keys in json
+python GitHunt.py db -m OpenAI -f json -o ~/export.json
+
+# Export mode: get valid OpenAI keys in grepable text format
+python GitHunt.py db -m OpenAI -f txt
+
+# Export mode, get all OpenAI Keys 
+python GitHunt.py db -m OpenAI -f csv -o ~/export.json --all
+```
+
+## Demo
 
 ![WARNING1](.assets/githunt-uses.png)
+
 
 ## Modules
 

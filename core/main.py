@@ -31,17 +31,18 @@ class GitHunt:
         parser = argparse.ArgumentParser(description='Hunt for sensitive data exposure on GitHub.', formatter_class=CustomArgFormatter)
 
         subparsers = parser.add_subparsers(dest='command', required=True, help='Available commands')
-        hunt_parser = subparsers.add_parser('hunt', help='Hunt for sensitive data')
+        hunt_parser = subparsers.add_parser('hunt', help='Hunt for sensitive data',  formatter_class=CustomArgFormatter)
         hunt_parser.add_argument('-m', '--module', dest='module', required=True, choices=self.available_modules,
                             help='Hunting module to run')
 
-        db_parser = subparsers.add_parser('db', help='Manage the database')
+        db_parser = subparsers.add_parser('db', help='Export the database',  formatter_class=CustomArgFormatter)
         db_parser.add_argument('-m', '--module', dest='module', required=True, choices=self.available_modules,
                             help='Module to manage in the database')
-        db_parser.add_argument('-f', '--format', dest='format', required=True, choices=['json', 'csv','txt'],
-                            help='Output format for the database')
-        db_parser.add_argument('-o', '--output', dest='output', required=True,
-                            help='Output file for the database export')
+        db_parser.add_argument('-f', '--format', dest='format', choices=['json', 'csv','txt'], default="json",
+                            help='Export output format (default: json)')
+        db_parser.add_argument('-o', '--output', dest='output', default="githunt_db_export.out",
+                            help='Output file')
+        db_parser.add_argument('--all', action='store_true', help='If specified, invalide values will also be exported')                            
 
         args = parser.parse_args()
         return args
@@ -62,23 +63,34 @@ class GitHunt:
         args = self.parse_arguments()
         self.module = args.module
 
+        # Init Database
+        self.databaseEngine = DatabaseEngine(self.available_modules)
+
 
         if args.command == 'hunt':
             print(f'{Fore.CYAN}Starting the hunt for {self.module} module...{Fore.WHITE}')
 
-            # Init Database
-            self.databaseEngine = DatabaseEngine(self.available_modules)
-
             ## Get hunting session / Github cookies
             self.hunt_session = HuntSession()
-
+            
             ## Start hunting
             self.huntEngine = HuntEngine(databaseEngine=self.databaseEngine, hunt_session=self.hunt_session, module=self.module)
             self.huntEngine.hunt()
-
-            #for api in apis:
-            #    print(api)
-            self.databaseEngine.close()
+            
+        
         elif args.command == 'db':
             print(f'{Fore.CYAN}Managing the database for {self.module} module...{Fore.WHITE}')
+            exportAll = args.all
+            format = args.format
+            output = args.output
+
+            # Export database
+            self.databaseEngine.exportDB(module=self.module,format=format, output=output, exportAll=exportAll)
+
+
+
+
+        self.databaseEngine.close()
+
+
             
