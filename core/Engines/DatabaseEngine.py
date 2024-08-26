@@ -65,7 +65,7 @@ class DatabaseEngine():
         if exportAll:
             query = f"SELECT * FROM {module}"
         else:
-            query = f"SELECT * FROM {module} WHERE isValid = 'YES'"
+            query = f"SELECT * FROM {module} WHERE isValid LIKE '%YES%'"
         
         self.cursor.execute(query)
         rows = self.cursor.fetchall()

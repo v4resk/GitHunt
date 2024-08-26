@@ -52,6 +52,8 @@ GitHunt uses “modules” to define targets for hunting sessions. Here is a lis
 |------|------|
 |   OpenAI  | Hunt for OpenAI API Keys     |
 |   Perplexity  | Hunt for Perplexity API Keys     |
+|   Stripe  | Hunt for Stripe Standard & Restricted API Keys     |
+|   Shodan  | Hunt for Shodan Paid API Keys     |
 
 # FAQ
 

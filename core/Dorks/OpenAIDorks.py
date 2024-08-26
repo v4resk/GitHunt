@@ -75,6 +75,9 @@ class OpenAIDorks(Dorks):
             "Go",
             "C%2B%2B",
             "PHP",
+            "Markdown",
+            "Text",
+            "Ruby",
         ]
 
         self.regex_list = [

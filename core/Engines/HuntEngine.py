@@ -142,7 +142,7 @@ class HuntEngine():
                 continue
     
             isValid = self.hunt_auditor.is_valide(api)
-            if isValid == "YES":
+            if "YES" in isValid:
                 valid_value_added = valid_value_added + 1
             self.databaseEngine.db_add_value(api, isValid=isValid ,module=self.module)
             value_added = value_added+1
