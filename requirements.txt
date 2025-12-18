@@ -6,3 +6,5 @@ bs4
 tqdm
 openai
 shodan
+censys
+anthropic

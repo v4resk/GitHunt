@@ -4,8 +4,9 @@ from tqdm import tqdm
 import time
 from colorama import Fore
 import re
-import json
 import random
+from bs4 import BeautifulSoup
+import os
 
 
 class HuntEngine():
@@ -14,6 +15,14 @@ class HuntEngine():
         self.hunt_session = hunt_session
         self.module = module 
         self.resume = resume
+        # Debug is only enabled when GITHUNT_DEBUG environment variable is explicitly set to '1'
+        # Default is '0', so debug is False by default
+        self.debug = os.environ.get('GITHUNT_DEBUG', '0') == '1'
+
+        def _debug(msg):
+            if self.debug:
+                print(f"{Fore.YELLOW}[debug]{Fore.WHITE} {msg}")
+        self._debug = _debug
 
         # Load hunt module & auditor
         self.keywords = None
@@ -82,29 +91,44 @@ class HuntEngine():
         apis = set()
         expand_urls = []
         
+        # Keep original HTML search flow
+
         for url, pattern in self.candidate_urls:
             next_page = 1
             while next_page < 6:
                 try:
                     # 0. Perform a GitHub search
                     #print(f"{Fore.CYAN}[+] {Fore.WHITE}Hunting URL: {url}")
-                    response = self.hunt_session.session.get(url)
+                    response = self.hunt_session.session.get(url, timeout=30)
                     isRateLimited = self.rate_limit_check(response)
                     if isRateLimited:
                         continue
-                    #print(response.text)
-
-                    # 1. Get all GitHub files that matched our searcg
-                    data = json.loads(response.text)
-                    matching_files = [
-                        f"https://github.com/{result['repo_nwo']}/blob/{result['commit_sha']}/{result['path']}"
-                        for result in data['payload']['results']
-                    ]                    
+                    # 1. Get all GitHub files that matched our search
+                    matching_files = []
+                    try:
+                        if response.headers.get('Content-Type', '').startswith('application/json'):
+                            data = response.json()
+                            matching_files = [
+                                f"https://github.com/{result['repo_nwo']}/blob/{result['commit_sha']}/{result['path']}"
+                                for result in data.get('payload', {}).get('results', [])
+                            ]
+                        else:
+                            # Fallback: parse HTML search results for blob links
+                            soup = BeautifulSoup(response.text, 'html.parser')
+                            links = set()
+                            for a in soup.find_all('a', href=True):
+                                href = a['href']
+                                if href.startswith('/') and '/blob/' in href:
+                                    links.add(href)
+                            matching_files = [f"https://github.com{href}" for href in links]
+                    except Exception as ex:
+                        print(ex)
+                        matching_files = []
                     expand_urls.extend(matching_files)
 
                     # 2. Request all files and extract secrets with corresponding regex 
                     for e_url in expand_urls:
-                        response_e = self.hunt_session.session.get(e_url)
+                        response_e = self.hunt_session.session.get(e_url, timeout=30)
                         #print(e_url)
                         self.rate_limit_check(response_e)
                         apis.update(pattern.findall(response_e.text))
@@ -142,6 +166,8 @@ class HuntEngine():
                 continue
     
             isValid = self.hunt_auditor.is_valide(api)
+            # Debug print of every found value and validation result
+            self._debug(f"Found value: {api} | validation: {isValid}")
             if "YES" in isValid:
                 valid_value_added = valid_value_added + 1
             self.databaseEngine.db_add_value(api, isValid=isValid ,module=self.module)

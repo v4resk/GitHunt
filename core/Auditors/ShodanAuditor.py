@@ -13,14 +13,15 @@ class ShodanAuditor(Auditor):
 
         try:
             time.sleep(1)
+            self._debug("Shodan request: api.info()")
             api = shodan.Shodan(key)
             info = api.info()
+            self._debug(f"Shodan response: plan={info.get('plan')}")
 
             if info['plan'] == 'dev' or info['plan'] == 'edu':
                 print(f"{Fore.GREEN}[+] {Fore.WHITE} Valid API found: {key} ")
                 return "YES"
             else:
-                print(f"{Fore.RED}[-] {Fore.WHITE} Inalid API found: {key}")
                 return "NO"
         except Exception as e:
             #print(e)
@@ -28,4 +29,5 @@ class ShodanAuditor(Auditor):
                 for _ in tqdm(range(40), desc=f"{Fore.RED}[-] {Fore.WHITE} Shodan rate limit reached, waiting ...", leave=False):
                     time.sleep(1)
                 return "CHECK FAILED"
+            self._debug(f"Shodan exception: {e}")
             return "NO"

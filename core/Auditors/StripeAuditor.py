@@ -21,10 +21,11 @@ class StripeAuditor(Auditor):
         }
         try:
             time.sleep(0.5)
+            self._debug(f"Stripe request: POST {url}")
             respons = requests.post(url=url, data=data, auth=HTTPBasicAuth(f'{key}', ''))
+            self._debug(f"Stripe response: status={respons.status_code} snippet={(respons.text[:200]).replace('\n',' ')}")
 
             if (respons.json()).get("error") and not (respons.json()).get("error").get("code") == "card_declined":
-                #print(f"{Fore.RED}[-] {Fore.WHITE} Invalide API found: {respons.json()}")
                 return "NO"
             elif (respons.json()).get("error") and (respons.json()).get("error").get("code") == "rate_limit":
                 for _ in tqdm(range(40), desc=f"{Fore.RED}[-] {Fore.WHITE} Stripe rate limit reached, waiting ...", leave=False):
@@ -35,4 +36,5 @@ class StripeAuditor(Auditor):
                 #print(respons.text)
                 return "YES"
         except Exception as e:
+            self._debug(f"Stripe exception: {e}")
             return "NO"

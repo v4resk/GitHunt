@@ -1,0 +1,86 @@
+from core.Dorks.Dorks import Dorks
+import re
+
+class ClaudeDorks(Dorks):
+    def __init__(self):
+        super().__init__()
+        self.keywords = [
+            "AI ethics",
+            "AI in customer service",
+            "AI in education",
+            "AI in finance",
+            "AI in healthcare",
+            "AI in marketing",
+            "AI-driven automation",
+            "AI-powered content creation",
+            "CoT",
+            "DPO",
+            "RLHF",
+            "agent",
+            "agnt",
+            "ai model",
+            "aios",
+            "api key",
+            "apikey",
+            "anthropic",
+            "artificial intelligence",
+            "chain of thought",
+            "chatbot",
+            "claude",
+            "competitor analysis",
+            "content strategy",
+            "conversational AI",
+            "data analysis",
+            "deep learning",
+            "direct preference optimization",
+            "experiment",
+            "haiku",
+            "key",
+            "keyword clustering",
+            "keyword research",
+            "lab",
+            "language model experimentation",
+            "large language model",
+            "llama.cpp",
+            "llm",
+            "long-tail keywords",
+            "machine learning",
+            "multi-agent",
+            "multi-agent systems",
+            "natural language processing",
+            "opus",
+            "personalized AI",
+            "project",
+            "rag",
+            "reinforcement learning from human feedback",
+            "retrieval-augmented generation",
+            "search intent",
+            "semantic search",
+            "sonnet",
+            "thoughts",
+            "virtual assistant",
+            "实验",
+            "密钥",
+            "测试",
+            "语言模型",
+        ]
+
+        self.languages = [
+            '"Jupyter Notebook"',
+            "Python",
+            "Shell",
+            "JavaScript",
+            "TypeScript",
+            "Java",
+            "Go",
+            "C%2B%2B",
+            "PHP",
+            "Markdown",
+            "Text",
+            "Ruby",
+        ]
+
+        self.regex_list = [
+            re.compile(r"sk-ant-api03-[a-zA-Z0-9_-]{95,}"),  # Named API Key (ant-api03)
+        ]
+

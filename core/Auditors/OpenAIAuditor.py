@@ -12,6 +12,7 @@ class OpenAIAuditor(Auditor):
         try:
             client = OpenAI(api_key=key)
 
+            self._debug(f"OpenAI request: chat.completions.create model={model}")
             completion = client.chat.completions.create(
                 model=model,
                 messages=[
@@ -23,11 +24,23 @@ class OpenAIAuditor(Auditor):
                 ],
             )
             result = completion.choices[0].message.content
+            self._debug(f"OpenAI response: snippet={(str(result)[:200]).replace('\n',' ')}")
             print(f"{Fore.GREEN}[+] {Fore.WHITE} Valid API found: {key}: {result}")
             return "YES"
         except AuthenticationError as e:
+            try:
+                code = e.body.get("code") if hasattr(e, 'body') else None
+            except Exception:
+                code = None
+            self._debug(f"OpenAI auth error: code={code} message={str(e)}")
             return f'NO: {e.body["code"]}'
         except RateLimitError as e:
+            try:
+                code = e.body.get("code") if hasattr(e, 'body') else None
+            except Exception:
+                code = None
+            self._debug(f"OpenAI rate limit: code={code} message={str(e)}")
             return f'NO: {e.body["code"]}'
         except Exception as e:
+            self._debug(f"OpenAI exception: {e}")
             return "NO"

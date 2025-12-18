@@ -6,9 +6,9 @@ class ShodanDorks(Dorks):
         super().__init__()
         self.keywords = [
             "shodan",
-            "api",
+            "shodan_api",
             "shodan_api_key",
-            "apikey",
+            "shodan_key",
         ]
 
         self.languages = [
